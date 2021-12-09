@@ -42,7 +42,7 @@ splicefile=/home/chaos/draic_data_analysis/annotation_file/gencode.v38.splice.tx
 for i in *.fastq
 do
   	date
-	name=$(echo $i | awk -F"_" '{print $i}')
+	name=$(echo $i | awk -F"_" '{print $1}')
         echo $name
         #display the command used
         echo  "hisat2 -p $threads -x $idx --known-splicesite-infile $splicefile $i | samtools view -bS - | samtools sort -n - -o $name.sorted.bam"
@@ -57,7 +57,7 @@ done
 for j in *.sorted.bam
 do
   	    date
-	      name1=$(echo $j | awk -F"_" '{print $i}')
+	      name1=$(echo $j | awk -F"_" '{print $1}')
         echo $name1
         echo "samtools fixmate -m $j - | samtools sort - | samtools markdup -rs - $name1.rmPCRdup.bam"
         #options for samtools: fixmate is for fix mate information, markdup is for marking duplicates       
@@ -91,7 +91,7 @@ dir=/home/chaos/draic_data_analysis/draic_data_fastq_files
 for i in *rmPCRdup.bam
 do
   	date
-        name=$(echo $i | awk -F"_" '{print $i}')
+        name=$(echo $i | awk -F"_" '{print $1}')
         echo $name
         echo "stringtie $i -G ${annotation} -o $name.annotation.gtf -p 40 -b ${dir} -A $name.gene_abund.out"
         #options for stringtie: -G is for annotation file, -o is for output gtf file, -p is or threads, -b is for location of ballown table files
