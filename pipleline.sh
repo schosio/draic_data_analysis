@@ -45,11 +45,11 @@ do
 	name=$(echo $i | awk -F"_" '{print $1}')
         echo $name
         #display the command used
-        echo  "hisat2 -p $threads -x $idx --known-splicesite-infile $splicefile $i | samtools view -bS - | samtools sort -n - -o $name.sorted.bam"
+        echo  "hisat2 -p $threads -x $idx --known-splicesite-infile $splicefile $i | samtools view -@ 40 -bS - | samtools sort -n -@ 40 - -o $name.sorted.bam"
         #options for hisat: -p is for threads used, --known-splicesite-infile is for splice site file
         #options for samtools: view is for file conversion, -bS is for .bam as output and .sam as input
         #options for samtools: sort is for sorting, -n is sorting by name, -o is for output
-        hisat2 -p $threads -x $idx --known-splicesite-infile $splicefile $i | samtools view -bS - | samtools sort -n - -o $name.sorted.bam
+        hisat2 -p $threads -x $idx --known-splicesite-infile $splicefile $i | samtools view -@ 40 -bS - | samtools sort -n -@ 40 - -o $name.sorted.bam
 done
 
 #STEP 4 : removing the PCR duplicates
@@ -59,9 +59,9 @@ do
   	    date
 	      name1=$(echo $j | awk -F"_" '{print $1}')
         echo $name1
-        echo "samtools fixmate -m $j - | samtools sort - | samtools markdup -rs - $name1.rmPCRdup.bam"
+        echo "samtools fixmate -@ 40 -m $j - | samtools sort -@ 40 - | samtools markdup -@ 40 -rs - $name1.rmPCRdup.bam"
         #options for samtools: fixmate is for fix mate information, markdup is for marking duplicates       
-        samtools fixmate -m $j - | samtools sort - | samtools markdup -rs - $name1.rmPCRdup.bam
+        samtools fixmate -@ 40 -m $j - | samtools sort -@ 40 - | samtools markdup -@ 40 -rs - $name1.rmPCRdup.bam
 done
 #STEP 5 : indexing the final .bam file
 
@@ -70,7 +70,7 @@ for u in *.rmPCRdup.bam
 do
   	date
     #options for samtools: index is for indexing the bam file, -b is to generate .bai index
-	  samtools index -b $u
+	  samtools index -@ 40 -b $u
   
 done
 
